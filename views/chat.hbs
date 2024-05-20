@@ -1,0 +1,38 @@
+<h1>Chat Box</h1>
+
+<textarea id="chat-input" rows="3"></textarea>
+<button>Send Chat</button>
+
+<h1>Chats</h1>
+<div class="chats">
+  {{#each chats}}
+    <p>{{user.username}}: {{text}}</p>
+  {{/each}}
+</div>
+
+<script type="module">
+  import { io } from "https://cdn.socket.io/4.7.5/socket.io.esm.min.js";
+  const socket = io()
+  const input = document.querySelector('#chat-input')
+  const btn = document.querySelector('button')
+
+  function sendMessage() {
+    const text = input.value
+
+    socket.emit('message', text)
+  }
+
+  socket.on('connect', () => {
+    console.log('server connected')
+  })
+
+  socket.on('chat', (data) => {
+    const output = document.querySelector('.chats')
+    console.log(data)
+
+    output.insertAdjacentHTML('beforeend', `<p>${data.user}: ${data.message}</p>`)
+  })
+
+  btn.addEventListener('click', sendMessage)
+
+</script>
